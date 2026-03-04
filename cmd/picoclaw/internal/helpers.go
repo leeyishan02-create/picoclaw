@@ -1,36 +1,86 @@
+// =============================================================================
+// internal 包 - PicoClaw 内部工具函数
+// =============================================================================
+// 这个包提供PicoClaw CLI应用程序所需的内部工具函数和常量。
+// 主要功能包括：
+// - 配置路径管理
+// - 版本信息管理
+// - Logo显示
+// =============================================================================
+
 package internal
 
+// =============================================================================
+// 导入 (Imports)
+// =============================================================================
 import (
-	"fmt"
-	"os"
-	"path/filepath"
-	"runtime"
+	"fmt"           // 格式化输出
+	"os"            // 操作系统功能，如环境变量和用户目录
+	"path/filepath" // 路径操作
+	"runtime"       // 运行时信息，如Go版本
 
-	"github.com/sipeed/picoclaw/pkg/config"
+	"github.com/sipeed/picoclaw/pkg/config" // 配置加载
 )
 
+// =============================================================================
+// 常量 (Constants)
+// =============================================================================
+// Logo - PicoClaw的标志符号，使用小龙虾emoji
 const Logo = "🦞"
 
+// =============================================================================
+// 全局变量 (Global Variables)
+// =============================================================================
+// 这些变量在编译时通过ldflags注入
 var (
-	version   = "dev"
-	gitCommit string
-	buildTime string
-	goVersion string
+	version   = "dev" // 版本号，默认为"dev"
+	gitCommit string  // Git提交哈希
+	buildTime string  // 构建时间
+	goVersion string  // Go版本
 )
 
+// =============================================================================
+// GetConfigPath - 获取配置文件路径
+// =============================================================================
+// 返回PicoClaw配置文件的路径。
+// 优先级：
+// 1. 环境变量 PICOCLAW_CONFIG（如果设置）
+// 2. 默认路径 ~/.picoclaw/config.json
+//
+// 使用示例：
+//   - 用户可以设置环境变量来指定自定义配置路径
+//   - 默认情况下，配置存储在用户主目录的.picoclaw文件夹中
 func GetConfigPath() string {
+	// 首先检查环境变量
 	if configPath := os.Getenv("PICOCLAW_CONFIG"); configPath != "" {
 		return configPath
 	}
+	// 获取用户主目录
 	home, _ := os.UserHomeDir()
+	// 返回默认配置路径
 	return filepath.Join(home, ".picoclaw", "config.json")
 }
 
+// =============================================================================
+// LoadConfig - 加载配置文件
+// =============================================================================
+// 加载并解析PicoClaw配置文件。
+// 使用GetConfigPath()获取配置文件路径，然后调用config.LoadConfig加载配置。
+//
+// 返回值：
+//   - *config.Config: 解析后的配置对象
+//   - error: 加载过程中的错误（如果有）
 func LoadConfig() (*config.Config, error) {
 	return config.LoadConfig(GetConfigPath())
 }
 
-// FormatVersion returns the version string with optional git commit
+// =============================================================================
+// FormatVersion - 格式化版本字符串
+// =============================================================================
+// 返回格式化的版本字符串，包含可选的Git提交信息。
+// 如果设置了gitCommit，会在版本号后添加"(git: xxx)"信息。
+//
+// 返回值：格式化的版本字符串，如 "v1.0.0 (git: abc123)"
 func FormatVersion() string {
 	v := version
 	if gitCommit != "" {
@@ -39,7 +89,15 @@ func FormatVersion() string {
 	return v
 }
 
-// FormatBuildInfo returns build time and go version info
+// =============================================================================
+// FormatBuildInfo - 格式化构建信息
+// =============================================================================
+// 返回构建时间和Go版本信息。
+// 如果goVersion未设置，会自动获取当前运行时的Go版本。
+//
+// 返回值：
+//   - build: 构建时间字符串
+//   - goVer: Go版本字符串
 func FormatBuildInfo() (string, string) {
 	build := buildTime
 	goVer := goVersion
@@ -49,7 +107,13 @@ func FormatBuildInfo() (string, string) {
 	return build, goVer
 }
 
-// GetVersion returns the version string
+// =============================================================================
+// GetVersion - 获取版本号
+// =============================================================================
+// 返回PicoClaw的版本号。
+// 这是一个简单的getter函数，返回内部version变量的值。
+//
+// 返回值：版本字符串（如 "v1.0.0" 或 "dev"）
 func GetVersion() string {
 	return version
 }

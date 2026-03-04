@@ -1,31 +1,61 @@
+// =============================================================================
+// helpers.go - 认证辅助函数
+// =============================================================================
+// 这个文件包含认证模块的核心辅助函数，实现与各种AI服务提供商的登录逻辑。
+// 支持的提供商包括：OpenAI、Anthropic、Google Antigravity
+// =============================================================================
+
 package auth
 
+// =============================================================================
+// 导入 (Imports)
+// =============================================================================
 import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"strings"
-	"time"
+	"encoding/json" // JSON编解码
+	"fmt"           // 格式化输出
+	"io"            // I/O操作
+	"net/http"      // HTTP请求
+	"os"            // 操作系统功能
+	"strings"       // 字符串操作
+	"time"          // 时间操作
 
-	"github.com/sipeed/picoclaw/cmd/picoclaw/internal"
-	"github.com/sipeed/picoclaw/pkg/auth"
-	"github.com/sipeed/picoclaw/pkg/config"
-	"github.com/sipeed/picoclaw/pkg/providers"
+	"github.com/sipeed/picoclaw/cmd/picoclaw/internal" // 内部工具函数
+	"github.com/sipeed/picoclaw/pkg/auth"              // 认证核心功能
+	"github.com/sipeed/picoclaw/pkg/config"            // 配置管理
+	"github.com/sipeed/picoclaw/pkg/providers"         // AI提供商
 )
 
+// =============================================================================
+// 常量 (Constants)
+// =============================================================================
+// supportedProvidersMsg - 支持的AI服务提供商列表
 const supportedProvidersMsg = "supported providers: openai, anthropic, google-antigravity"
 
+// =============================================================================
+// authLoginCmd - 登录命令处理函数
+// =============================================================================
+// 根据指定的提供商类型，调用相应的登录函数。
+// 这是一个路由函数，根据provider参数分发到不同的登录实现。
+//
+// 参数：
+//   - provider: AI服务提供商名称 (openai, anthropic, google-antigravity)
+//   - useDeviceCode: 是否使用设备码流程
+//
+// 返回值：
+//   - error: 登录过程中的错误（如果有）
 func authLoginCmd(provider string, useDeviceCode bool) error {
 	switch provider {
 	case "openai":
+		// OpenAI登录
 		return authLoginOpenAI(useDeviceCode)
 	case "anthropic":
+		// Anthropic登录（使用粘贴token方式）
 		return authLoginPasteToken(provider)
 	case "google-antigravity", "antigravity":
+		// Google Antigravity登录
 		return authLoginGoogleAntigravity()
 	default:
+		// 不支持的提供商
 		return fmt.Errorf("unsupported provider: %s (%s)", provider, supportedProvidersMsg)
 	}
 }

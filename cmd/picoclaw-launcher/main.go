@@ -1,13 +1,20 @@
-// PicoClaw Launcher - Standalone HTTP service
+// =============================================================================
+// PicoClaw Launcher - 独立的HTTP服务
+// =============================================================================
+// 这是一个独立的HTTP服务，提供基于Web的JSON配置编辑器。
+// 支持OAuth提供商认证，让用户可以通过浏览器配置PicoClaw。
 //
-// Provides a web-based JSON editor for picoclaw config files,
-// with OAuth provider authentication support.
+// 主要功能：
+// - Web界面配置编辑器
+// - OAuth认证支持（OpenAI、Anthropic等）
+// - 实时配置预览和编辑
+// - 支持公开访问（-public参数）
 //
-// Usage:
-//
-//	go build -o picoclaw-launcher ./cmd/picoclaw-launcher/
-//	./picoclaw-launcher [config.json]
-//	./picoclaw-launcher -public config.json
+// 构建和使用方法：
+//   go build -o picoclaw-launcher ./cmd/picoclaw-launcher/
+//   ./picoclaw-launcher [config.json]
+//   ./picoclaw-launcher -public config.json
+// =============================================================================
 
 package main
 
